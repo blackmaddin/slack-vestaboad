@@ -1,3 +1,5 @@
+app = "vestaboard-slack"
+
 [env]
   PORT = "8080"
 
