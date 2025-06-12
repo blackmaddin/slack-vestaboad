@@ -1,4 +1,10 @@
-app = "vestaboard-slack"
+[build]
+  builder = "paketobuildpacks/builder:base"
+
+app = "vest-aboard-live"
+
+[build]
+  builder = "paketobuildpacks/builder:base"
 
 [env]
   PORT = "8080"
