@@ -1,6 +1,3 @@
-[build]
-  builder = "paketobuildpacks/builder:base"
-
 app = "vest-aboard-live"
 
 [build]
@@ -16,6 +13,7 @@ app = "vest-aboard-live"
   [[services.ports]]
     port = 80
     handlers = ["http"]
+
   [[services.ports]]
     port = 443
     handlers = ["tls", "http"]
