@@ -1,23 +1,17 @@
-import os
-from flask import Flask, request, jsonify
-import requests
-from dotenv import load_dotenv
-
-load_dotenv()
-app = Flask(__name__)
-
-VB_API_KEY = os.environ.get("VESTABOARD_API_KEY")
-VB_API_SECRET = os.environ.get("VESTABOARD_API_SECRET")
-VB_SUBSCRIPTION_ID = os.environ.get("VESTABOARD_SUBSCRIPTION_ID")
-
 @app.route("/slack/events", methods=["POST"])
 def slack_events():
-    data = request.json
-    event = data.get("event", {})
+    data = request.get_json()
 
+    # 💡 Handle Slack's URL verification challenge
+    if data.get("type") == "url_verification":
+        challenge = data.get("challenge")
+        return challenge, 200, {'Content-Type': 'text/plain'}
+
+    # 💬 Handle regular Slack message events
+    event = data.get("event", {})
     if event.get("type") == "message" and not event.get("bot_id"):
         message = event.get("text", "")
-        print(f"Empfangene Slack-Nachricht: {message}")
+        print(f"Nachricht empfangen: {message}")
 
         headers = {
             "x-vestaboard-api-key": VB_API_KEY,
@@ -32,13 +26,6 @@ def slack_events():
             response = requests.post(url, json=payload, headers=headers)
             print(f"Vestaboard Antwort: {response.status_code}")
         except Exception as e:
-            print(f"Fehler: {e}")
+            print(f"Fehler beim Senden an Vestaboard: {e}")
 
     return jsonify({"status": "ok"}), 200
-
-@app.route("/")
-def home():
-    return "Slack → Vestaboard Forwarder läuft!", 200
-    
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
