@@ -1,31 +1,32 @@
+from flask import Flask, request, jsonify
+import os
+import requests
+
+app = Flask(__name__)
+
+VB_API_KEY = os.environ.get("VESTABOARD_API_KEY")
+VB_API_SECRET = os.environ.get("VESTABOARD_API_SECRET")
+VB_SUBSCRIPTION_ID = os.environ.get("VESTABOARD_SUBSCRIPTION_ID")
+
 @app.route("/slack/events", methods=["POST"])
 def slack_events():
     data = request.get_json()
 
-    # 💡 Handle Slack's URL verification challenge
+    # 👇 Slack-Challenge beantworten (für URL-Verifizierung)
     if data.get("type") == "url_verification":
-        challenge = data.get("challenge")
-        return challenge, 200, {'Content-Type': 'text/plain'}
+        return data["challenge"], 200, {'Content-Type': 'text/plain'}
 
-    # 💬 Handle regular Slack message events
+    # 👇 Slack Message Event verarbeiten
     event = data.get("event", {})
     if event.get("type") == "message" and not event.get("bot_id"):
         message = event.get("text", "")
-        print(f"Nachricht empfangen: {message}")
-
         headers = {
             "x-vestaboard-api-key": VB_API_KEY,
             "x-vestaboard-api-secret": VB_API_SECRET,
             "Content-Type": "application/json"
         }
-
         payload = {"text": message}
         url = f"https://subscriptions.vestaboard.com/subscriptions/{VB_SUBSCRIPTION_ID}/message"
+        requests.post(url, json=payload, headers=headers)
 
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            print(f"Vestaboard Antwort: {response.status_code}")
-        except Exception as e:
-            print(f"Fehler beim Senden an Vestaboard: {e}")
-
-    return jsonify({"status": "ok"}), 200
+    return jsonify({"ok": True}), 200
