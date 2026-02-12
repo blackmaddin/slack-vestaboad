@@ -28,6 +28,27 @@ Small Flask service that forwards Slack messages or web form input to the Vestab
 - Use Slack Signing Secret (recommended) over verification token fallback.
 - Rotate credentials if exposed.
 
+## Built-in Hardening Toggles
+The code already includes security controls that can be enabled/configured via `.env`:
+
+- `SLACK_SIGNING_SECRET`:
+  Enables Slack signature verification (`X-Slack-Signature`) with replay protection.
+- `WEB_FORM_TOKEN_REQUIRED=true`:
+  Requires an additional access code for web form submissions.
+- `WEB_FORM_TOKEN`:
+  Access code used when `WEB_FORM_TOKEN_REQUIRED=true`.
+- `RATE_LIMIT_STORAGE_URI`:
+  Configure rate-limit backend (default `memory://`; use Redis in larger deployments).
+- `MAX_MESSAGE_LENGTH`:
+  Caps accepted message length.
+- `FLASK_SECRET_KEY`:
+  Required for secure session/CSRF handling.
+
+Recommended stricter setup:
+- Set `SLACK_SIGNING_SECRET` (and remove fallback token usage).
+- Set `WEB_FORM_TOKEN_REQUIRED=true` for shared/public links.
+- Use Redis-backed limiter storage instead of in-memory defaults.
+
 ## Required Slack Setup
 - Enable Event Subscriptions
 - Request URL: `https://your-domain/slack/events`
