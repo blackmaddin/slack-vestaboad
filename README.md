@@ -36,3 +36,5 @@ Small Flask service that forwards Slack messages or web form input to the Vestab
 
 ## License
 MIT
+
+Made with love in Neu-Ulm.
