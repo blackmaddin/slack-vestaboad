@@ -1,0 +1,37 @@
+services:
+  vestaboard_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vestaboard_bot
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - VESTABOARD_API_KEY=${VESTABOARD_API_KEY}
+      - VESTABOARD_API_SECRET=${VESTABOARD_API_SECRET}
+      - VESTABOARD_SUBSCRIPTION_ID=${VESTABOARD_SUBSCRIPTION_ID}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SLACK_VERIFICATION_TOKEN=${SLACK_VERIFICATION_TOKEN}
+      - WEB_SECRET_PATH=${WEB_SECRET_PATH}
+      - WEB_FORM_TOKEN=${WEB_FORM_TOKEN}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - MAX_MESSAGE_LENGTH=${MAX_MESSAGE_LENGTH:-200}
+      - RATE_LIMIT_STORAGE_URI=${RATE_LIMIT_STORAGE_URI:-memory://}
+      - WEB_FORM_TOKEN_REQUIRED=${WEB_FORM_TOKEN_REQUIRED:-false}
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped

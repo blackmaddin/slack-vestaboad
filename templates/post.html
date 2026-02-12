@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vestaboard Nachricht</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    textarea {
+      resize: none;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      height: 100px;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.75rem;
+      font-size: 1rem;
+      background-color: #83BFA4; /* Founders Space Grün */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #70a991;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Deine Nachricht an das Vestaboard ✍️</h1>
+    {% if error %}
+    <p style="color: #b00020; font-size: 0.95rem;">{{ error }}</p>
+    {% endif %}
+    <form action="{{ action_url }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      {% if require_access_token %}
+        <input
+          type="password"
+          name="access_token"
+          placeholder="Access code"
+          required
+          style="padding: 0.75rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 1rem;"
+        />
+      {% endif %}
+      <textarea name="message" placeholder="Schreibe etwas Nettes..." required></textarea>
+      <button type="submit">Senden</button>
+    </form>
+  </div>
+</body>
+</html>
