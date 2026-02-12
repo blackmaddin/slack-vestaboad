@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO_DIR="/opt/vestaboard"
-BRANCH="main"
+BRANCH="production"
 LOG_PREFIX="[vestaboard-auto-update]"
 
 cd "$REPO_DIR"
@@ -10,6 +10,10 @@ cd "$REPO_DIR"
 if ! git fetch origin "$BRANCH" --quiet; then
   echo "$LOG_PREFIX fetch failed (auth/network); skipping"
   exit 0
+fi
+
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
+  git checkout "$BRANCH"
 fi
 
 current_local="$(git rev-parse "$BRANCH")"
