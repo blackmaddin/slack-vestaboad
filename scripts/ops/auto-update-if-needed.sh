@@ -7,9 +7,12 @@ LOG_PREFIX="[vestaboard-auto-update]"
 
 cd "$REPO_DIR"
 
-current_local="$(git rev-parse "$BRANCH")"
+if ! git fetch origin "$BRANCH" --quiet; then
+  echo "$LOG_PREFIX fetch failed (auth/network); skipping"
+  exit 0
+fi
 
-git fetch origin "$BRANCH" --quiet
+current_local="$(git rev-parse "$BRANCH")"
 current_remote="$(git rev-parse "origin/$BRANCH")"
 
 if [ "$current_local" = "$current_remote" ]; then
